@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React White Shark</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+    </style>
+  </head>
+
+  <body>
+
+  <script type="text/babel">
+
+  class Parent extends React.Component {
+
+      constructor(props){
+        super(props)
+        this.state = {
+          clients: [{key: 0, name:'Pee Hole', address: '15 Esplanade'}, {key: 1, name: 'Princess', address: '27 Highland'}],
+          key: 1,
+          update: 0
+        }
+        this.addClient = this.addClient.bind(this)
+        this.editClient = this.editClient.bind(this)
+        this.deleteItem = this.deleteItem.bind(this)
+        this.updateU = this.updateU.bind(this)
+      }
+
+      updateU(){
+        this.setState({
+          update: this.state.update + 1
+        })
+      }
+
+      deleteItem(key){
+        var clients = this.state.clients
+        var new_clients = clients.filter(c=> c.key!== key)
+        this.setState({
+          clients: new_clients
+        })
+
+      }
+
+
+      addClient(e){
+        var clients = this.state.clients
+        var new_key = this.state.key + 1
+        var new_clients = clients.concat([{
+          key: new_key,
+          name: self._name.value,
+          address: self._address.value
+        }])
+        console.log("New Clients:", new_clients)
+        this.setState({
+          clients: new_clients
+
+        })
+        self._name.value = ""
+        self._name.focus()
+        self._address.value = ""
+        e.preventDefault()
+      }
+
+      editClient(key, name, address){
+        console.log("NEW NAME:" + name)
+        var clients = this.state.clients
+        var new_clients = clients.map(c=>{
+          console.log("Compare " + c.key + " and " + key)
+          if(c.key==key){
+            c.name = name
+            console.log("Assigned To Name " + name)
+            c.address = address
+          }
+          return c
+        })
+        console.log("New Clients:", new_clients)
+        this.setState({
+          clients: new_clients
+        })
+      }
+
+      render(){
+        var nameStyle = {
+          margin:5,
+          padding:65,
+          display: "block",
+          borderRadius: "15%",
+          backgroundColor: "#FFC53A",
+          fontSize: "18px",
+          color: "blue",
+          width: 350,
+          height: 550,
+          textAlign: "center"
+        }
+
+
+        return(
+            <div style={nameStyle}>
+              <ClientList clients={this.state.clients} deleteMe={this.deleteItem} editClient={this.editClient} update={this.updateU}/><br/><br/>
+             <form onSubmit={this.addClient}>
+                Enter Name
+                <input type='text'
+                  onChange={this.change_name}
+                  placeholder = "Enter Name"
+                  ref={(e1) => self._name = e1}>
+                </input>
+                <input type='text'
+                  onChange={this.change_address}
+                  placeholder = "Enter Address"
+                  ref={(e1) => self._address = e1}>
+                </input>
+                <button type='Submit'>Add Client</button>
+              </form>
+            </div>
+
+          )
+        }
+
+    }
+
+  const Title = ()=>{return (<h2>Hi Ho</h2>)}
+
+  class ClientList extends React.Component {
+
+    constructor(props) {
+      super(props)
+
+      this.state = {
+        do_edit: false,
+        editKey: null,
+        editName: null,
+        editAddress: null,
+        mounted: 0
+      }
+
+      this.editClient = this.editClient.bind(this)
+      this.updateClient = this.updateClient.bind(this)
+      this.onChangeName = this.onChangeName.bind(this)
+    }
+
+    componentDidMount(){
+      this.setState({
+        mounted: this.state.mounted + 1
+      })
+      console.log("Just Mounted", this.state.mounted)
+    }
+
+    onChangeName(e){
+      this.setState({
+        editName: e.target.value
+      })
+    }
+
+    editClient(key){
+      var ec = this.props.clients.filter((c)=>{return c.key==key})
+      console.log("EC ARRAY: ", ec)
+      self._key = ""
+      self._name = ""
+      self._address = ""
+      this.setState({
+        do_edit: true,
+        editKey: ec[0].key,
+        editName: ec[0].name,
+        editAddress: ec[0].address
+
+      })
+    }
+
+    updateClient(e){
+      console.log('KEY:' + self._key.value)
+      console.log('KEY:' + self._name.value)
+      this.props.editClient(self._key.value, self._name.value, self._address.value)
+      e.preventDefault()
+    }
+
+    render(){
+      const clients = this.props.clients
+      console.log("Clients: " + clients)
+      const cList = clients.map((c)=>
+          <li key={c.key}>{c.name} {c.address}
+            <button onClick={()=>this.editClient(c.key)}>Edit Client</button>
+            <button onClick={()=>this.props.deleteMe(c.key)}>Delete Client</button>
+          </li>
+      )
+
+      if(this.state.do_edit){
+        return(
+          <div>
+            <Title /><br/>
+            {cList}<br/><br/>
+            <h2>{this.state.editName} {this.state.editAddress}</h2>
+            <form onSubmit={this.updateClient}>
+              <input
+                type='hidden' value={this.state.editKey}
+                ref = {(e1)=> self._key = e1}
+              />
+              <input
+                type='text' defaultValue={self.state.editName}
+                onChange = {this.onChangeName}
+                ref = {(e2)=> self._name = e2}
+              />
+              <input
+                type='text' defaultValue={this.state.editAddress}
+                ref = {(e3)=> self._address = e3}
+              />
+              <button type='submit'>Edit Client</button>
+            </form>
+          </div>
+
+        )
+      }else{
+        return(
+          <div>
+            <Title /><br/>
+            {cList}
+          </div>
+        )
+      }
+    }
+  }
+
+  var destination = document.getElementById('ok')
+
+  ReactDOM.render(
+    <div>
+      <Parent />
+    </div>
+    ,destination
+  );
+
+
+  </script>
+
+  <div id='ok'>
+  </div>
+
+  </body>
+
+
+</html>
