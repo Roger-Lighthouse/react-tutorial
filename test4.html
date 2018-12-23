@@ -32,16 +32,13 @@
         this.deleteItem = this.deleteItem.bind(this)
       }
 
-
       deleteItem(key){
         var clients = this.state.clients
         var new_clients = clients.filter(c=> c.key!== key)
         this.setState({
           clients: new_clients
         })
-
       }
-
 
       addClient(e){
         var clients = this.state.clients
@@ -51,7 +48,6 @@
           name: self._name.value,
           address: self._address.value
         }])
-        console.log("New Clients:", new_clients)
         this.setState({
           clients: new_clients
 
@@ -63,18 +59,14 @@
       }
 
       editClient(key, name, address){
-        console.log("NEW NAME:", name)
         var clients = this.state.clients
         var new_clients = clients.map(c=>{
-          console.log("Compare " + c.key + " and " + key)
           if(c.key==key){
             c.name = name
-            console.log("Assigned To Name " + name)
             c.address = address
           }
           return c
         })
-        console.log("New Clients:", new_clients)
         this.setState({
           clients: new_clients
         })
@@ -94,7 +86,6 @@
           textAlign: "center"
         }
 
-
         return(
             <div style={nameStyle}>
               <ClientList clients={this.state.clients} deleteMe={this.deleteItem} editClient={this.editClient} update={this.updateU}/><br/><br/>
@@ -113,7 +104,6 @@
                 <button type='Submit'>Add Client</button>
               </form>
             </div>
-
           )
         }
 
@@ -125,7 +115,6 @@
 
     constructor(props) {
       super(props)
-
       this.state = {
         do_edit: false,
         editKey: '',
@@ -138,7 +127,6 @@
       this.onChangeName = this.onChangeName.bind(this)
       this.onChangeAddress = this.onChangeAddress.bind(this)
     }
-
 
     onChangeName(e){
       this.setState({
@@ -154,7 +142,6 @@
 
     editClient(key){
       var ec = this.props.clients.filter((c)=>{return c.key==key})
-      console.log("EC ARRAY: ", ec)
       self._key = ""
       self._name = ""
       self._address = ""
@@ -163,13 +150,10 @@
         editKey: ec[0].key,
         editName: ec[0].name,
         editAddress: ec[0].address
-
       })
     }
 
     updateClient(e){
-      console.log('KEY:' + self._key.value)
-      console.log('KEY:' + self._name.value)
       this.props.editClient(self._key.value, self._name.value, self._address.value)
       self._key = ""
       self._name = ""
@@ -179,14 +163,12 @@
         editKey: "",
         editName: "",
         editAddress: ""
-
       })
       e.preventDefault()
     }
 
     render(){
       const clients = this.props.clients
-      console.log("Clients: ", clients)
       const cList = clients.map((c)=>
           <li key={c.key}>{c.name} {c.address}
             <button onClick={()=>this.editClient(c.key)}>Edit Client</button>
